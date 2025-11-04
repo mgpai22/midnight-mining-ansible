@@ -1,0 +1,6 @@
+miner_user: midnight
+miner_dir: /opt/midnight-mining
+server_url: ""
+
+install_url: "https://raw.githubusercontent.com/mgpai22/midnight-miner-releases/main/install.sh"
+run_url: "https://raw.githubusercontent.com/mgpai22/midnight-miner-releases/main/run.sh"
