@@ -2,16 +2,10 @@
 - name: Deploy midnight miner
   hosts: midnight_miners
   become: true
-  vars:
-    miner_user: midnight
-    miner_dir: /opt/midnight-mining
-    server_url: "https://your-server-or-cdn/path"   # <-- set me
-    install_url: "https://raw.githubusercontent.com/mgpai22/midnight-miner-releases/main/install.sh"
-    run_url: "https://raw.githubusercontent.com/mgpai22/midnight-miner-releases/main/run.sh"
 
   tasks:
     - name: Ensure miner user exists
-    - user:
+      user:
         name: "{{ miner_user }}"
         shell: /bin/bash
         create_home: yes
@@ -50,9 +44,20 @@
         mode: "0600"              # tighten if it has secrets; use "0644" if not
       notify: Restart midnight-miner
 
+    - name: Set WORKER_THREADS to CPU count
+      lineinfile:
+        path: "{{ miner_dir }}/.env"
+        regexp: '^WORKER_THREADS='
+        line: "WORKER_THREADS={{ ansible_processor_vcpus }}"
+        owner: "{{ miner_user }}"
+        group: "{{ miner_user }}"
+        mode: "0600"
+      notify: Restart midnight-miner
+
     - name: Run installer once (idempotent-ish)
       args:
         chdir: "{{ miner_dir }}"
+        executable: /bin/bash
       become_user: "{{ miner_user }}"
       shell: |
         set -euo pipefail
@@ -72,13 +77,14 @@
           Type=simple
           User={{ miner_user }}
           WorkingDirectory={{ miner_dir }}
+          Environment="HOME=/home/{{ miner_user }}"
+          EnvironmentFile={{ miner_dir }}/.env
           ExecStart=/bin/bash {{ miner_dir }}/run.sh
           Restart=always
           RestartSec=5
           # Optional: tighten resources a bit
           NoNewPrivileges=true
           ProtectSystem=full
-          ProtectHome=true
 
           [Install]
           WantedBy=multi-user.target
