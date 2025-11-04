@@ -1,4 +1,4 @@
-Midnight Miner Anisible
+# Midnight Miner Anisible
 
 This is a simple Ansible playbook to deploy the Midnight Miner on a set of servers.
 
