@@ -1,3 +1,4 @@
 hosts.ini
 *.ppk
 *.env
+*_openssh
