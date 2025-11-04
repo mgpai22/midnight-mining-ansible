@@ -23,5 +23,5 @@ Make sure to set the server_url in the group_vars/all.yml file.
 
 Run the playbook with:
 ```
-ansible-playbook -u root --key-file ./path/to/ssh_key.ppk site.yml
+ansible-playbook -i hosts.ini -u root --key-file ./path/to/ssh_key.ppk --ssh-common-args='-o StrictHostKeyChecking=accept-new -o BatchMode=yes'   site.yml
 ```
